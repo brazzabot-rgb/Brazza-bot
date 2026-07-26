@@ -1,3 +1,26 @@
+const { GoogleSpreadsheet } = require('google-spreadsheet');
+const { JWT } = require('google-auth-library');
+const creds = require('./credentials.json');
+
+const SPREADSHEET_ID = '1xR-bJ4J1lYwqRCfiQEkXHxas0kEII9x-UiH1Vq3RKlg';
+
+const serviceAccountAuth = new JWT({
+  email: creds.client_email,
+  key: creds.private_key,
+  scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+});
+
+async function ajouterMessage(numero, message) {
+  const doc = new GoogleSpreadsheet(SPREADSHEET_ID, serviceAccountAuth);
+  await doc.loadInfo();
+  const sheet = doc.sheetsByIndex[0];
+  await sheet.addRow({
+    Date: new Date().toLocaleString('fr-FR'),
+    'Numéro client': numero,
+    Message: message,
+    Statut: 'Nouveau'
+  });
+}
 const express = require('express');
 const twilio = require('twilio');
 const app = express();
@@ -13,6 +36,7 @@ app.post('/webhook', async (req, res) => {
   const from = req.body.From;
   const text = req.body.Body;
   console.log(`Message reçu de ${from}: ${text}`);
+  await ajouterMessage(from, text);
 
   const reponse = "Merci pour votre message ! Nous vous répondrons bientôt.";
 
