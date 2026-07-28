@@ -11,15 +11,22 @@ const serviceAccountAuth = new JWT({
 });
 
 async function ajouterMessage(numero, message) {
-  const doc = new GoogleSpreadsheet(SPREADSHEET_ID, serviceAccountAuth);
-  await doc.loadInfo();
-  const sheet = doc.sheetsByIndex[0];
-  await sheet.addRow({
-    Date: new Date().toLocaleString('fr-FR'),
-    'Numéro client': numero,
-    Message: message,
-    Statut: 'Nouveau'
-  });
+  try {
+    console.log('DEBUT ajout Sheets');
+    const doc = new GoogleSpreadsheet(SPREADSHEET_ID, serviceAccountAuth);
+    await doc.loadInfo();
+    console.log('Sheets chargé, titre:', doc.title);
+    const sheet = doc.sheetsByIndex[0];
+    await sheet.addRow({
+      Date: new Date().toLocaleString('fr-FR'),
+      'Numéro client': numero,
+      Message: message,
+      Statut: 'Nouveau'
+    });
+    console.log('Ligne ajoutée avec succès');
+  } catch (err) {
+    console.log('ERREUR SHEETS:', err.message);
+  }
 }
 const express = require('express');
 const twilio = require('twilio');
