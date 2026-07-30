@@ -23,7 +23,7 @@ const serviceAccountAuth = new JWT({
 });
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash-latest' });
+const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
 
 async function compterCommandes(numero) {
   const doc = new GoogleSpreadsheet(SPREADSHEET_ID, serviceAccountAuth);
